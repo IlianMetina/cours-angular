@@ -311,8 +311,8 @@ L'exemple le plus commun est de créer un Guard d'authentification afin de s'ass
 
 Ces Guards peuvent être utilisés simplement en les ajoutant à nos routes définies dans `app.routes.ts` plus tôt, avec le paramètre `canActivate`, comme tel :
 
-import { AuthGuard } from './auth.guard';
-import { AdminComponent } from './admin.component';
+    import { AuthGuard } from './auth.guard';
+    import { AdminComponent } from './admin.component';
 
     const routes: Routes = [
     {
