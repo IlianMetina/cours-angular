@@ -120,31 +120,45 @@ Il contient une balise spéciale :
 
 #### `<app-root>`
 
-
+C'est le composant principal de toute l'application, Angular démarre toujours pas lui. Tout le reste passe à l'intérieur de ce composant.
 
 Il y a également une balise spéciale dans le fichier src/app/app.html :
 
 #### `<router-outlet>`
 
+Cette balise est centrale : c'est celle-ci qui va permettre et choisir quel composant afficher en fonction de la route.
 
 
+Le fichier permettant à la balise `<router-outlet>` de fonctionner est le fichier `app/app.routes.ts`
 
-Le fichier permettant à la balise `<router-outlet>` de fonctionner est le fichier app/app.routes.ts.
+#### Extrait :
 
-Extrait :
-
-`export const routes: Routes = [];`
+    export const routes: Routes = [];
 
 Ce fichier va permettre de lier une route à un composant, de manière très simple :
 
-`export const routes: Routes = [`
+    export const routes: Routes = [
 
-`{path: "login", component: Login},`
+        {path: "login", component: Login},
 
-`{path: "register", component: Register},`
+        {path: "register", component: Register},
 
-`]},`
-`];`
+    ]},
+    ];
 
-Le "path" signifie la route après le nom de domaine, par exemple en local pour la route login, on met login (localhost:4200/login), et on lie ensuite le composant (créer auparavant avec la commande ng g c) dans le paramètre component. Et maintenant, le router-outlet se chargera à chaque changement de routes de venir voir ce fichier, et ensuite de suivre les directives qu'on lui aura donné pour charger dynamiquement les composants en fonction des routes empruntées par l'utilisateur.
+Le "path" signifie la route après le nom de domaine, par exemple en local pour la route login, on met login (localhost:4200/login), et on lie ensuite le composant (créer auparavant avec la commande ng g c) dans le paramètre component. 
 
+Et maintenant, le router-outlet se chargera à chaque changement de routes de venir voir ce fichier, et ensuite de suivre les directives qu'on lui aura donné pour charger dynamiquement les composants en fonction des routes empruntées par l'utilisateur.
+
+Vous pouvez essayer : faites la commande `ng g c NomDuComposant` dans le dossier app/, et associez le à une route de votre choix dans `app.routes.ts`, par exemple l'accueil :
+
+    export const routes: Routes = [
+
+        {path: "", component: NomDeVotreComposant},
+
+    ]},
+    ];  
+
+Exécutez ensuite la commande `ng serve` pour lancer l'application, et rendez vous sur `http://localhost:4200` (4200 étant le port par défaut d'une application Angular)
+
+Si vous n'avez pas modifier le HTML, en imagination que vous avez appeler votre composant Home, vous devriez voir afficher : `home works!`
