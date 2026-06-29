@@ -4,6 +4,43 @@ Angular est un framework offrant de nombreux outils pour développer un front-en
 
 Angular fonctionne sous forme de composants, ce qui permet de découper une application en morceaux de code réutilisables, et de mieux séparer chaque blocs d'éléments, ce qui permet d'être plus organisé et de s'y retrouver plus facilement.
 
+## Le système de composants
+
+Comme dis plus haut, les composants correspondent aux briques d'une application Angular. 
+
+Un composant contrôle une partie de l'interface, et est constituée de 3 fichiers : HTML, CSS, TypeScript.
+
+Donc chaque composant à son fichier HTML, avec son CSS propre à lui, et lié à un fichier TypeScript, qui peut par exemple servir à afficher dynamiquement des données :
+
+    // app.component.ts
+    import { Component } from '@angular/core';
+
+    @Component({
+    selector: 'app-root',        // Balise HTML utilisée dans les templates
+    templateUrl: './app.component.html',  // Fichier HTML associé
+    styleUrls: ['./app.component.css']    // Fichier(s) CSS associé(s) (On peut en mettre plusieurs)
+    })
+    export class AppComponent {
+    titre = 'Mon Application';   // Attribut de ma classe
+
+    saluer() {                   // Méthode 
+        return `Bonjour depuis ${this.titre}`;
+    }
+    }
+
+On voit qu'on pourrait utiliser mon attribut "titre" pour afficher le nom de l'application par exemple, ou utiliser la méthode saluer. Mais comment ça fonctionne ? C'est très simple.
+
+Dans votre HTML, il vous suffit d'utiliser les doubles accolades `{{}}`, et d'y placer le nom de l'attribut si vous voulez l'afficher, et la même chose pour une méthode, sans oublier les parenthèses pour celles-ci :
+
+    <!-- app.component.html -->
+    <h1>{{ titre }}</h1> 
+    Affichera la valeur de "titre" : Mon Application
+
+    <p>{{ saluer() }}</p>
+    Affichera la valeur de retour de saluer() : Mon Application
+
+Cette façon d'afficher des données, ou plutôt de les liées (Data Binding) s'appelle l'interpolation. Il en existe d'autres qui seront utilisées pour autre chose que de l'affichage.
+
 ## L'arborescence d'un projet Angular
 
 #### Exemple simple d'arborescence :
@@ -54,9 +91,9 @@ Angular fonctionne sous forme de composants, ce qui permet de découper une appl
         - header/
         - footer/
         - navbar/
-- app.routes.ts
-- app.component.ts
-- app.config.ts
+      - app.routes.ts
+      - app.component.ts
+      - app.config.ts
 - assets/
 - environments/
 - public/
@@ -128,6 +165,13 @@ Il y a également une balise spéciale dans le fichier src/app/app.html :
 
 Cette balise est centrale : c'est celle-ci qui va permettre et choisir quel composant afficher en fonction de la route.
 
+Dans le fichier `app.html`, c'est là que vous mettrez les composants globaux contenus dans le dossier `layout/`. Si dans votre application vous aimeriez que le header & le footer soient toujours présents, il suffira de les ajouter dans le bon ordre :
+
+    <app-header-component></app-header-component>
+    <router-outlet></router-outlet>
+    <app-footer-component></app-footer-component>
+
+Comme vous pouvez le voir, le header tout en haut car il sera affiché en haut, le footer en bas, et le router-outlet au milieu qui insèrera dynamiquement le composant correspondant à la route.
 
 Le fichier permettant à la balise `<router-outlet>` de fonctionner est le fichier `app/app.routes.ts`
 
@@ -150,15 +194,109 @@ Le "path" signifie la route après le nom de domaine, par exemple en local pour 
 
 Et maintenant, le router-outlet se chargera à chaque changement de routes de venir voir ce fichier, et ensuite de suivre les directives qu'on lui aura donné pour charger dynamiquement les composants en fonction des routes empruntées par l'utilisateur.
 
-Vous pouvez essayer : faites la commande `ng g c NomDuComposant` dans le dossier app/, et associez le à une route de votre choix dans `app.routes.ts`, par exemple l'accueil :
+Vous pouvez essayer : faites la commande `ng g c NomDuComposant` dans le dossier app/, et associez le à une route de votre choix dans `app.routes.ts`, par exemple l'accueil `(http://localhost:4200/)`:
 
     export const routes: Routes = [
 
         {path: "", component: NomDeVotreComposant},
-
     ]},
     ];  
 
-Exécutez ensuite la commande `ng serve` pour lancer l'application, et rendez vous sur `http://localhost:4200` (4200 étant le port par défaut d'une application Angular)
+Exécutez ensuite la commande `ng serve` pour lancer l'application, et rendez vous sur `http://localhost:4200/` (4200 étant le port par défaut d'une application Angular)
 
-Si vous n'avez pas modifier le HTML, en imagination que vous avez appeler votre composant Home, vous devriez voir afficher : `home works!`
+Si vous n'avez pas modifier le HTML, en imaginant que vous avez appeler votre composant Home, vous devriez voir afficher : `home works!`
+
+## Les directives Angular
+
+Les directives ce sont des marqueurs placés sur des éléments HTML, et qui indiquent à Angular de leur appliquer un comportement particulier.
+
+Par exemple, on peut appliquer directement une condition dans le HTML, ce qui va permettre d'afficher ou non quelque chose. Repartons de l'exemple précédent :
+
+    app.component.ts
+
+        import { Component } from '@angular/core';
+
+        @Component({
+        selector: 'app-root',        
+        templateUrl: './app.component.html',  
+        styleUrls: ['./app.component.css']    
+        })
+        export class AppComponent {
+        titre = 'Mon Application';   
+        isUserConnected = true;
+        username = "Jean";
+
+        saluer() {                   
+            return `Bonjour depuis ${this.titre}`;
+        }
+        }
+
+Vous pouvez voir que j'ai ajouté un nouvel attribut de type booléen, isUserConnected que j'ai initialisé à true pour l'exemple, ainsi qu'un autre pour stocker un prénom.
+
+Imaginons que vous ayez une logique permettant de déterminer si un utilisateur est connecté, et que c'est la variable isUserConnected qui la stockera (dans notre cas, l'utilisateur est connecté).
+
+En général, lorsqu'un utilisateur est connecté, on affiche son prénom ou pseudo, et lorsqu'il ne l'est pas, on peut afficher "Visiteur" ou "Invité" par exemple. Et bien avec Angular ça s'articule comme ça : 
+
+    Si l'utilisateur est connecté, on affiche le prénom stocké dans username :
+    @if (isUserConnected == true) {
+    <p>Bienvenue, {{ username }} !</p>
+
+    Sinon, on affiche "Mode Invité" :
+    } @else if (isUserConnected == false) {
+    <p>Mode invité</p>
+    }
+
+On peut également utiliser la directive @for dans le HTML d'un composant, par exemple sur un site e-commerce, pour afficher dynamiquement tous les produits :
+
+    @for (produit of produits; track produit.id) {
+    <div class="carte">
+        <h3>{{ produit.nom }}</h3>
+        <p>{{ produit.prix }} €</p>
+    </div>
+    } @empty {
+    <p>Aucun produit disponible.</p>
+    }
+
+Ici dans cet exemple, on imagine que dans notre fichier TypeScript on ait rajouté un attribut produits qui serait un tableau :
+
+        @Component({
+        selector: 'app-root',        
+        templateUrl: './app.component.html',  
+        styleUrls: ['./app.component.css']    
+        })
+        export class AppComponent {
+        titre = 'Mon Application';   
+        isUserConnected = true;
+        username = "Jean";
+        produits = [];
+
+        async ngOnInit(){
+
+            const response = await fetch("http://localhost:PORT/getAllProducts")
+
+            this.produits = await response.json();
+        }
+
+        saluer() {                   
+            return `Bonjour depuis ${this.titre}`;
+        }
+        }
+
+Vous pouvez voici ici que grâce à la méthode fetch, je peux réaliser une appel API vers l'URL correspondant à la route me permettant de récupérer tous mes produits.
+Sauf que du code exécutable en TypeScript doit être contenu dans une méthode, ici ngOnInit(). Cette méthode est un "hook" de cycle de vie, c'est à dire une méthode qui sera appelée automatiquement à un moment précis de la vie d'un composant. Pour ngOnInit, c'est à l'initialisation du composant, donc quand la personne sera sur la page associée à ce fichier TypeScript, une seule fois et dans ce cas précis.
+
+Je le stocke ensuite dans mon attribut produits, qui est un tableau.
+
+Je reprends donc l'exemple mis plus haut :
+
+    @for (produit of produits; track produit.id) {
+    <div class="carte">
+        <h3>{{ produit.nom }}</h3>
+        <p>{{ produit.prix }} €</p>
+    </div>
+    } @empty {
+    <p>Aucun produit disponible.</p>
+    }
+
+C'est donc une boucle foreach plutôt classique, mis à part le mot clé "track" dans les paramètres de la boucle for qui est obligatoire, ainsi que le @empty, qui permet de gérer le cas où le tableau de produits serait vide, et d'afficher quelque chose par défaut.
+
