@@ -114,3 +114,37 @@ Lorsque vous exécuterez la commande ng new, on vous proposera de faire des choi
 
 Une fois cela fait, Angular va générer les dossiers & fichiers pendant quelques instants, et vous vous retrouverez avec une architecture presque identique à celle schématisée plus haut, avec seulement quelques dossiers à créer (services, shared, core, features, layout).
 
+Une fois le projet généré, vous pouvez regarder dans le fichier src/index.html.
+
+Il contient une balise spéciale :
+
+#### `<app-root>`
+
+
+
+Il y a également une balise spéciale dans le fichier src/app/app.html :
+
+#### `<router-outlet>`
+
+
+
+
+Le fichier permettant à la balise `<router-outlet>` de fonctionner est le fichier app/app.routes.ts.
+
+Extrait :
+
+`export const routes: Routes = [];`
+
+Ce fichier va permettre de lier une route à un composant, de manière très simple :
+
+`export const routes: Routes = [`
+
+`{path: "login", component: Login},`
+
+`{path: "register", component: Register},`
+
+`]},`
+`];`
+
+Le "path" signifie la route après le nom de domaine, par exemple en local pour la route login, on met login (localhost:4200/login), et on lie ensuite le composant (créer auparavant avec la commande ng g c) dans le paramètre component. Et maintenant, le router-outlet se chargera à chaque changement de routes de venir voir ce fichier, et ensuite de suivre les directives qu'on lui aura donné pour charger dynamiquement les composants en fonction des routes empruntées par l'utilisateur.
+
