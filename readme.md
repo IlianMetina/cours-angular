@@ -282,7 +282,7 @@ Ici dans cet exemple, on imagine que dans notre fichier TypeScript on ait rajout
         }
         }
 
-Vous pouvez voici ici que grâce à la méthode fetch, je peux réaliser une appel API vers l'URL correspondant à la route me permettant de récupérer tous mes produits.
+Vous pouvez voir ici que grâce à la méthode fetch, je peux réaliser un appel API vers l'URL correspondant à la route me permettant de récupérer tous mes produits.
 Sauf que du code exécutable en TypeScript doit être contenu dans une méthode, ici ngOnInit(). Cette méthode est un "hook" de cycle de vie, c'est à dire une méthode qui sera appelée automatiquement à un moment précis de la vie d'un composant. Pour ngOnInit, c'est à l'initialisation du composant, donc quand la personne sera sur la page associée à ce fichier TypeScript, une seule fois et dans ce cas précis.
 
 Je le stocke ensuite dans mon attribut produits, qui est un tableau.
