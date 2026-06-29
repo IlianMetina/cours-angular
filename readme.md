@@ -298,5 +298,81 @@ Je reprends donc l'exemple mis plus haut :
     <p>Aucun produit disponible.</p>
     }
 
-C'est donc une boucle foreach plutôt classique, mis à part le mot clé "track" dans les paramètres de la boucle for qui est obligatoire, ainsi que le @empty, qui permet de gérer le cas où le tableau de produits serait vide, et d'afficher quelque chose par défaut.
+C'est donc une boucle foreach plutôt classique, mis à part le mot clé "track" dans les paramètres de la boucle for qui est obligatoire, ainsi que le @empty, qui permet de gérer le cas où le tableau de produits serait vide, et ainsi afficher quelque chose par défaut.
 
+Ces deux directives sont les deux que vous utiliserez et croiserez le plus souvent, même s'il en existe d'autres.
+
+## Les Guards avec Angular
+
+Un Guard avec Angular est une fonctionnalité permettant de contrôler et réguler l'accès à des routes spécifiques.
+Ils peuvent être utilisés pour exécuter certaines vérifications et actions avant l'accès à une route. 
+
+L'exemple le plus commun est de créer un Guard d'authentification afin de s'assurer que l'utilisateur est authentifié pour pouvoir accéder aux routes nécessitant une connexion de la part de l'utilisateur.
+
+Ces Guards peuvent être utilisés simplement en les ajoutant à nos routes définies dans `app.routes.ts` plus tôt, avec le paramètre `canActivate`, comme tel :
+
+import { AuthGuard } from './auth.guard';
+import { AdminComponent } from './admin.component';
+
+    const routes: Routes = [
+    {
+        path: 'admin',
+        component: AdminComponent,
+        canActivate: [AuthGuard], // Utilisation du guard
+    }
+    ];
+
+
+Imaginons que vous ayez un service appelé `AuthService`, s'occupant de toute la logique relative à l'authentification :
+
+    import { Injectable } from '@angular/core';
+
+    @Injectable({
+    providedIn: 'root'
+    })
+    export class AuthService {
+    private isAuthenticated = false;
+
+    login() {
+        this.isAuthenticated = true;
+    }
+
+    logout() {
+        this.isAuthenticated = false;
+    }
+
+    isAuthenticated(): boolean {
+        return this.isAuthenticated;
+    }
+    }
+
+Ici, on imagine que lorsque les identifiants envoyés par l'utilisateur lors du login, la méthode login() soit exécutée, et inversement en cas de déconnexion, que ce soit la méthode logout() qui soit exécutée.
+
+Il est donc possible ensuite d'utiliser notre attribut de classe `isAuthenticated` pour vérifier si un utilisateur est connecté ou non.
+
+Et on peut ensuite utiliser cet attribut dans notre Guard, qui sera dédié à vérifier qu'un utilisateur est authentifié lorsqu'il accède à une route que l'on souhaite protéger :
+
+    import { inject } from "@angular/core";
+    import { Router } from "@angular/router";
+    import { AuthService } from "./auth.service";
+
+    export const AuthGuard = () => {
+        const auth = inject(AuthService);
+        const router = inject(Router);
+
+        if(!auth.isAuthenticated()) {
+            router.navigateByUrl('/login')
+            return false
+        }
+        return true
+    }
+
+En Angular, l'injection de dépendance se fait via la méthode inject. Donc au lieu de créer un constructeur, il suffit d'écrire `const auth = inject(AuthService);`.
+
+On aura donc injecté notre service AuthService dans notre AuthGuard, et on fait une deuxième injection de dépendances pour Router, qui est un service Angular qui permet de naviguer entre les routes, et de forcer une redirection par exemple.
+
+Et avec une simple condition qui vérifie si l'utilisateur est connecté (`if(!auth.isAuthenticated())`), on exécute la méthode de notre AuthService `isAuthenticated()`, et ensuite définir des actions :
+
+Dans notre exemple, si l'utilisateur n'est pas connecté, alors on utilise le service Router d'Angular pour rediriger l'utilisateur vers la page `login`, et on retourne false.
+
+Au contraire, si isAuthenticated() retourne la valeur true, alors le AuthGuard aussi, et donc l'accès à cette route sera autorisée pour l'utilisateur.
