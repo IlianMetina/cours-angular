@@ -39,7 +39,7 @@ Dans votre HTML, il vous suffit d'utiliser les doubles accolades `{{}}`, et d'y 
     <p>{{ saluer() }}</p>
     Affichera la valeur de retour de saluer() : Mon Application
 
-Cette façon d'afficher des données, ou plutôt de les liées (Data Binding) s'appelle l'interpolation. Il en existe d'autres qui seront utilisées pour autre chose que de l'affichage.
+Cette façon d'afficher des données, ou plutôt de les liées (Data Binding) s'appelle l'interpolation. Il en existe d'autres qui seront utilisées pour d'autres choses que l'affichage.
 
 ## L'arborescence d'un projet Angular
 
