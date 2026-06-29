@@ -113,7 +113,7 @@ Exemple : Account pour le compte utilisateur, products pour les produits, orders
 
 #### - Shared/ : Contient ce qui peut être réutilisé partout
 
-Exemple : Une carte produit qui servira comme d'un moule où l'on viendra remplacé dynamiquement les valeurs souhaitées, un bouton personnalisé.
+Exemple : Une carte produit qui servira comme d'un moule où l'on viendra remplacé dynamiquement les valeurs souhaitées, ou plus simplement un bouton personnalisé.
 
 #### - Layout/ : Contient tout les composants qui apparaitront sur toutes les pages
 
@@ -231,9 +231,9 @@ Par exemple, on peut appliquer directement une condition dans le HTML, ce qui va
         }
         }
 
-Vous pouvez voir que j'ai ajouté un nouvel attribut de type booléen, isUserConnected que j'ai initialisé à true pour l'exemple, ainsi qu'un autre pour stocker un prénom.
+Vous pouvez voir que j'ai ajouté un nouvel attribut de type booléen, `isUserConnected` que j'ai initialisé à true pour l'exemple, ainsi qu'un autre pour stocker un prénom.
 
-Imaginons que vous ayez une logique permettant de déterminer si un utilisateur est connecté, et que c'est la variable isUserConnected qui la stockera (dans notre cas, l'utilisateur est connecté).
+Imaginons que vous ayez une logique permettant de déterminer si un utilisateur est connecté, et que c'est la variable `isUserConnected` qui la stockera (dans notre cas, l'utilisateur est connecté).
 
 En général, lorsqu'un utilisateur est connecté, on affiche son prénom ou pseudo, et lorsqu'il ne l'est pas, on peut afficher "Visiteur" ou "Invité" par exemple. Et bien avec Angular ça s'articule comme ça : 
 
@@ -283,7 +283,7 @@ Ici dans cet exemple, on imagine que dans notre fichier TypeScript on ait rajout
         }
 
 Vous pouvez voir ici que grâce à la méthode fetch, je peux réaliser un appel API vers l'URL correspondant à la route me permettant de récupérer tous mes produits.
-Sauf que du code exécutable en TypeScript doit être contenu dans une méthode, ici ngOnInit(). Cette méthode est un "hook" de cycle de vie, c'est à dire une méthode qui sera appelée automatiquement à un moment précis de la vie d'un composant. Pour ngOnInit, c'est à l'initialisation du composant, donc quand la personne sera sur la page associée à ce fichier TypeScript, une seule fois et dans ce cas précis.
+Sauf que du code exécutable en TypeScript doit être contenu dans une méthode, ici `ngOnInit()`. Cette méthode est un "hook" de cycle de vie, c'est à dire une méthode qui sera appelée automatiquement à un moment précis de la vie d'un composant. Pour `ngOnInit`, c'est à l'initialisation du composant, donc quand la personne sera sur la page associée à ce fichier TypeScript, une seule fois et dans ce cas précis.
 
 Je le stocke ensuite dans mon attribut produits, qui est un tableau.
 
@@ -298,7 +298,7 @@ Je reprends donc l'exemple mis plus haut :
     <p>Aucun produit disponible.</p>
     }
 
-C'est donc une boucle foreach plutôt classique, mis à part le mot clé "track" dans les paramètres de la boucle for qui est obligatoire, ainsi que le @empty, qui permet de gérer le cas où le tableau de produits serait vide, et ainsi afficher quelque chose par défaut.
+C'est donc une boucle foreach plutôt classique, mis à part le mot clé `track` dans les paramètres de la boucle for qui est obligatoire, ainsi que le `@empty`, qui permet de gérer le cas où le tableau de produits serait vide, et ainsi afficher quelque chose par défaut.
 
 Ces deux directives sont les deux que vous utiliserez et croiserez le plus souvent, même s'il en existe d'autres.
 
@@ -346,7 +346,9 @@ Imaginons que vous ayez un service appelé `AuthService`, s'occupant de toute la
     }
     }
 
-Ici, on imagine que lorsque les identifiants envoyés par l'utilisateur lors du login, la méthode login() soit exécutée, et inversement en cas de déconnexion, que ce soit la méthode logout() qui soit exécutée.
+Ici, on imagine que lorsque les identifiants envoyés par l'utilisateur lors du login, la méthode login() soit exécutée en cas de connexion réussie.
+
+Et inversement en cas de déconnexion, lorsque l'utilisateur clique sur le bouton de déconnexion, que ce soit la méthode logout() qui soit exécutée.
 
 Il est donc possible ensuite d'utiliser notre attribut de classe `isAuthenticated` pour vérifier si un utilisateur est connecté ou non.
 
@@ -371,8 +373,32 @@ En Angular, l'injection de dépendance se fait via la méthode inject. Donc au l
 
 On aura donc injecté notre service AuthService dans notre AuthGuard, et on fait une deuxième injection de dépendances pour Router, qui est un service Angular qui permet de naviguer entre les routes, et de forcer une redirection par exemple.
 
-Et avec une simple condition qui vérifie si l'utilisateur est connecté (`if(!auth.isAuthenticated())`), on exécute la méthode de notre AuthService `isAuthenticated()`, et ensuite définir des actions :
+Et avec une simple condition qui vérifie si l'utilisateur est connecté (`if(!auth.isAuthenticated())`), on exécute la méthode de notre AuthService `isAuthenticated()`, pour ensuite définir des actions :
 
 Dans notre exemple, si l'utilisateur n'est pas connecté, alors on utilise le service Router d'Angular pour rediriger l'utilisateur vers la page `login`, et on retourne false.
 
-Au contraire, si isAuthenticated() retourne la valeur true, alors le AuthGuard aussi, et donc l'accès à cette route sera autorisée pour l'utilisateur.
+Au contraire, si `isAuthenticated()` retourne la valeur true, alors le AuthGuard aussi, et donc l'accès à cette route sera autorisée pour l'utilisateur.
+
+## La navigation dans Angular
+
+En HTML lorsque l'on veut qu'un élément redirige vers une route lors du clic, on utilise la balise `<a>`, avec l'attribut `href` :
+
+`<a href="/login">`
+
+Cette méthode fonctionne mais on perd les nombreux avantages que nous offre Angular, car lors du clic sur une balise `<a href="/ma-page">`, cela force le rechargement de la page.
+
+Mais en Angular, il y a un nouveau paramètre disponible à utiliser à chaque fois que vous voudrez rediriger sur l'une de vos pages : `RouterLink`.
+
+C'est à dire qu'à la place d'utiliser `href`, vous utiliserez `routerLink`.
+
+#### Sans Angular :
+
+`<a href="/produits">Voir les produits</a>`
+
+#### Avec Angular :
+
+`<a routerLink="/produits">Voir les produits</a>`
+
+RouterLink nous permet de mettre à jour l'URL dans le navigateur et d'afficher le bon composant, sans même avoir à recharger la page. La navigation est donc beaucoup plus rapide car on ne recharge pas tous les éléments, on remplace seulement ceux qui ont besoin d'être remplacés (composants).
+
+Évidemment, si vous voulez que votre balise `<a>` redirige vers un site externe, il faudra utiliser l'attribut `href`.
