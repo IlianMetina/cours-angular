@@ -402,3 +402,121 @@ C'est à dire qu'à la place d'utiliser `href`, vous utiliserez `routerLink`.
 RouterLink nous permet de mettre à jour l'URL dans le navigateur et d'afficher le bon composant, sans même avoir à recharger la page. La navigation est donc beaucoup plus rapide car on ne recharge pas tous les éléments, on remplace seulement ceux qui ont besoin d'être remplacés (composants).
 
 Évidemment, si vous voulez que votre balise `<a>` redirige vers un site externe, il faudra utiliser l'attribut `href`.
+
+## Les formulaires Angular (Reactive Forms)
+
+Il existe deux façons de gérer des formulaires avec Angular : 
+
+- Template-driven forms
+- Reactive forms
+
+J'aborderais seulement les formulaires avec Reactive Forms puisque c'est l'approche la plus puissante, même si ça reste un peu plus verbeux.
+
+La différence entre les deux c'est que la logique du formulaire pour `reactive forms` est définie dans le HTML, avec des attributs spécifiques, alors que pour `template-driven forms`, la logique est définie dans le fichier TypeScript, en utilisant des classes comme `FormControl`, `FormBuilder` et `FormGroup`.
+
+- `FormControl` : représente un seul champ du formulaire
+- `FormGroup` : représente un groupe de `FormControl`, donc en général un formulaire entier
+- `FormBuilder` : un service qui permet simplement de raccourcir la syntaxe à écrire, comme un builder en Java qui permettrait de faire les setters plus rapidement par exemple. C'est facultatif, ce n'est pas obligatoire pour que ça fonctionne, dans les prochains exemples on n'utilisera pas `FormBuilder`.
+
+Tout d'abord pour utiliser les `reactive forms` d'Angular, il faut que vous importiez `ReactiveFormsModule` dans le module du composant où vous voulez l'utiliser, par exemple pour un composant Login pour récupérer les données du formulaire de connexion :
+
+    import { ReactiveFormsModule } from '@angular/forms';
+
+    @Component({
+    selector: 'app-login',
+    standalone: true,
+    imports: [ReactiveFormsModule],
+    templateUrl: './login.component.html',
+    })
+    export class LoginComponent { }
+
+Dans le tableau `imports`, c'est ici que vous devrez l'importer.
+Pour `FormControl` & `FormGroup`, il faudra les importer en haut du fichier.
+
+Ensuite, vous devrez également réaliser un autre import, qui ne sert pas au fonctionnement mais à la validation des formulaires. Il faudra l'importer en haut du fichier et non pas dans le tableau d'imports où on a ajouté `ReactiveFormsModule`. Il s'agit de  la classe `Validators`. Exemple mis à jour :
+
+    import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+
+    @Component({
+    selector: 'app-login',
+    standalone: true,
+    imports: [ReactiveFormsModule],
+    templateUrl: './login.component.html',
+    })
+    export class LoginComponent { }
+
+
+Il faut donc d'abord créer le formulaire dans notre fichier TypeScript, puis ensuite le raccorder dans notre HTML. Mais comment ça se présente ?
+Voici un exemple:
+
+    export class Login{
+
+    formulaire = new FormGroup({
+        email:      new FormControl('', [Validators.required, Validators.email]),
+        motDePasse: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    });
+
+    onSubmit() {
+        if (this.formulaire.valid) {
+        console.log(this.formulaire.value);
+        }
+    }
+    }
+
+Vous pouvez voir que `FormControl` & `FormGroup` sont bien des classes : on doit les instancier avec le mot clé `new`.
+
+Donc on crée un groupe de `FormControl` (FormGroup), que l'on appelle "formulaire" ici dans cet exemple. `FormGroup` c'est simplement un groupe de `FormControl`, qui eux mêmes représentent seulement un champ d'un formulaire.
+
+`FormGroup` attends donc forcément des champs à récolter. Pour cela, il demande des objets, c'est à dire des instances de la classe `FormControl`.
+
+    formulaire = new FormGroup({
+    email:      new FormControl('', [Validators.required, Validators.email]),
+    motDePasse: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    });
+
+On voit que `formulaire` possède deux objets de type `FormControl` : `email` & `motDePasse`.
+
+`FormControl` attends 1 paramètre obligatoire, et un second facultatif :
+
+    new FormControl(valeurInitiale, validators)
+
+On donne donc en premier la valeur de départ du champ (on souhaite qu'il soit vide donc `''`), puis on peut rajouter en deuxième argument des validators (de la classe `Validators` rajoutée plus tôt) qui nous permettrons de valider les champs de notre formulaire.
+On utilise les `Validators` sur nos 2 objets `email` et `motDePasse` :
+
+    [Validators.required, Validators.email]
+    [Validators.required, Validators.minLength(6)]
+
+#### - Validators.required : 
+S'assure que le champ n'est pas vide
+
+#### - Validators.email :
+S'assure que la valeur respecte un format email (grâce à une regex)
+
+#### - Validators.minLength(number)
+S'assure que la valeur respecte un nombre minimum de caractères, via le paramètre donné dans les parenthèses.
+
+Il existe d'autres, consultables ici : https://angular.dev/api/forms/Validators
+
+#### Et donc une fois cela fait, comment le lier au HTML ?
+
+    <form [formGroup]="formulaire" (ngSubmit)="onSubmit()">
+    <input formControlName="email" placeholder="Email" />
+    <input type="password" formControlName="motDePasse" placeholder="Mot de passe" />
+    <button type="submit" [disabled]="formulaire.invalid">Connexion</button>
+    </form>
+
+Regarder : on doit d'abord insérer une balise `<form>`, avec un paramètre `[formGroup]` pour dire que ce formulaire est de type `FormGroup`, et on lui associe le nom de la variable donnée à notre `FormGroup` dans notre fichier TypeScript : `formulaire`.
+
+Il y a également un autre paramètre, `(ngSubmit)` qui écoute l'évènement de soumission du formulaire, et on lui associe une méthode qui sera exécutée lorsque l'utilisateur enverra le formulaire.
+
+    onSubmit() {
+        if (this.formulaire.valid) {
+        console.log(this.formulaire.value);
+        }
+    }
+
+Notre méthode `onSubmit()` de l'exemple plus haut
+
+## Les signals
+
+
