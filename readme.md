@@ -22,12 +22,12 @@ templateUrl: './app.component.html',  // Fichier HTML associé
 styleUrls: ['./app.component.css']    // Fichier(s) CSS associé(s) (On peut en mettre plusieurs)
 })
 export class AppComponent {
-titre = 'Mon Application';   // Attribut de ma classe
+    titre = 'Mon Application';   // Attribut de ma classe
 
-saluer() {                   // Méthode 
-    return `Bonjour depuis ${this.titre}`;
-}
+    saluer() {                   // Méthode 
+        return `Bonjour depuis ${this.titre}`;
     }
+}
 ```
 On voit qu'on pourrait utiliser mon attribut "titre" pour afficher le nom de l'application par exemple, ou utiliser la méthode saluer. Mais comment ça fonctionne ? C'est très simple.
 
@@ -527,6 +527,14 @@ motDePasse: new FormControl('', [Validators.required, Validators.minLength(6)])
 ```
 Le nom donné à mon champ pour le mot de passe est `motDePasse`, je dois donc donner cette même valeur en paramètre de `formControlName`, et ce pour chacun des inputs correspondant aux `FormControls`, pour qu'ils puissent être <ins>**liées**</ins>.
 
+Petite précision, dans l'extrait d'HTML donné plus haut, on voit un paramètre un peu spécial dans la balise `<button>` : `[disabled]="formulaire.invalid"`
+
+`[disabled]` est tout simplement un paramètre, qui nous donne la possibilité d'utiliser 2 méthodes associées à notre `FormGroup` (qu'on a appelé `formulaire` dans notre exemple) :
+
+- **leNomDeNotreFormGroup.invalid** : Vérifie que les champs respectent bien tous les validateurs qu'on a mis. Par exemple, pour le champ e-mail de notre `FormControl` email on a mis `Validators.email`, alors si l'utilisateur essaye d'envoyer le formulaire en appuyant sur le bouton, grâce à `[disabled]="formulaire.invalid"`, si un seul des champs ne respectent pas les validations mises, alors le `submit` ne s'effectue pas. 
+  
+L'avantage, c'est qu'on évite une requête vers notre serveur, et le traitement des données.
+
 Pour terminer avec les Reactive Forms, vous avez pu voir que la méthode qu'on associe à notre balise `<form>` ne sert à rien, c'est seulement une méthode qui va exécuter un `console.log`.
 
 Donc voyons un exemple concret, où un utilisateur est enregistré, et se connecte avec les bons identifiants. Il appuie sur le bouton, et le formulaire active la méthode associée définie plus tôt (`onSubmit()`).
@@ -562,27 +570,22 @@ Si le serveur nous répond que la connexion est réussie, on le redirige avec le
 
 Maintenant, essayez avec une page login très simple, sans faire de vérification d'identifiants.
 
-Par exemple, une page login qui contiendrait 
+Tout d'abord, il vous faut donc un composant Login.
+Placez vous dans le dossier de votre choix, soit vous créez un dossier `components` dans `app/`, puis exécutez la commande `ng g c NomDuComposant`.
+
+Vous pouvez partir de cette base HTML si vous le souhaitez :
 ```html
- <form [formGroup]="formulaire" (ngSubmit)="onSubmit()">
+ <form [formGroup]="?" (ngSubmit)="?">
 
     <div class="champ">
       <label for="email">Email</label>
-      <input id="email" formControlName="email" placeholder="ton@email.com" />
-
-      <!-- TODO: afficher une erreur si le champ email est invalide ET touché -->
-
+      <input id="email" placeholder="ton@email.com" />
     </div>
 
     <div class="champ">
       <label for="motDePasse">Mot de passe</label>
-      <input id="motDePasse" type="password" formControlName="motDePasse" placeholder="••••••••" />
-
-      <!-- TODO: afficher une erreur si le champ motDePasse est invalide ET touché -->
-
+      <input id="motDePasse" type="password" placeholder="••••••••" />
     </div>
-
-    <!-- TODO: afficher le message retourné par l'API (succès ou erreur) -->
 
     <button type="submit" [disabled]="formulaire.invalid">
       Se connecter
@@ -590,6 +593,10 @@ Par exemple, une page login qui contiendrait
 
   </form>
 ```
+
+Maintenant, il vous reste qu'à fabriquer vos `FormControls`, votre `FormGroup`, et lier les noms de vos `FormControls` à vos balises `<input>`.
+
+L'objectif final : réussir à bien récupérer les valeurs de votre formulaire (mettez un voire plusieurs `console.log` au besoin pour vérifier la conformité des données envoyées), et les envoyer au controller de votre serveur.
 
 ## Les signals
 
