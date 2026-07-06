@@ -145,6 +145,8 @@ Créer un nouveau projet Angular
  Générer un dossier service avec les fichiers de base
 #### - ng serve 
 Lancer l'application Angular
+#### - ng build
+Compile l'application Angular pour la production, et transforme les fichiers TypeScript, HTML & CSS en fichiers JS/HTML/CSS optimisés et prêts à être déployés.
 
 ## Getting Started
 
@@ -571,7 +573,7 @@ Si le serveur nous répond que la connexion est réussie, on le redirige avec le
 Maintenant, essayez avec une page login très simple, sans faire de vérification d'identifiants.
 
 Tout d'abord, il vous faut donc un composant Login.
-Placez vous dans le dossier de votre choix, soit vous créez un dossier `components` dans `app/`, puis exécutez la commande `ng g c NomDuComposant`.
+Placez vous dans le dossier de votre choix, soit vous créez un dossier `components` dans `app/` si vous voulez juste essayer, soit adopter une arborescence plus organisée comme montrée plus haut dans le cours, puis exécutez la commande `ng g c NomDuComposant`.
 
 Vous pouvez partir de cette base HTML si vous le souhaitez :
 ```html
@@ -598,6 +600,15 @@ Maintenant, il vous reste qu'à fabriquer vos `FormControls`, votre `FormGroup`,
 
 L'objectif final : réussir à bien récupérer les valeurs de votre formulaire (mettez un voire plusieurs `console.log` au besoin pour vérifier la conformité des données envoyées), et les envoyer au controller de votre serveur.
 
+# TODO
+
+
 ## Les signals
 
 
+
+## @Input / @Output
+#### Pour la partage de données entre composant parent/enfant
+
+
+## Les observables ?
